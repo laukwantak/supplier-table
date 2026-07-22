@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>供应商拍摄资源总览</title>
+<style>
+  :root {
+    --bg: #F7F6F2;
+    --surface: #FFFFFF;
+    --text: #1A1A1A;
+    --accent: #B08968;
+    --border: #E5E3DE;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
+    font-weight: 400;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .app {
+    max-width: 1560px;
+    margin: 0 auto;
+    padding: 60px 64px 100px;
+  }
+
+  .header { margin-bottom: 56px; }
+
+  .header-top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header h1 {
+    font-size: 36px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    color: var(--text);
+  }
+
+  .header p {
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 300;
+    color: rgba(26,26,26,0.45);
+    letter-spacing: 0.3px;
+  }
+
+  .stats { display: flex; gap: 32px; }
+  .stat-item { text-align: right; }
+
+  .stat-item .num {
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .stat-item .label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(26,26,26,0.35);
+    margin-top: 6px;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .controls-right {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .sync-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: rgba(26,26,26,0.35);
+  }
+
+  .sync-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #6B9E6B;
+    box-shadow: 0 0 6px rgba(107,158,107,0.5);
+  }
+
+  .sync-dot.offline {
+    background: #C0504D;
+    box-shadow: 0 0 6px rgba(192,80,77,0.5);
+  }
+
+  .add-btn {
+    background: var(--text);
+    border: none;
+    border-radius: 6px;
+    padding: 11px 24px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
+    color: var(--bg);
+    cursor: pointer;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+  }
+
+  .add-btn:hover { opacity: 0.8; }
+
+  .loading-overlay {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 0;
+    color: rgba(26,26,26,0.3);
+    font-size: 14px;
+    gap: 10px;
+  }
+
+  .loading-spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    overflow-x: auto;
+  }
+
+  table { width: 100%; border-collapse: collapse; min-width: 1200px; }
+
+  thead th {
+    padding: 14px 20px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(26,26,26,0.35);
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg);
+    white-space: nowrap;
+  }
+
+  thead th:first-child { padding-left: 28px; }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+    animation: rowIn 0.5s ease both;
+  }
+
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(176,137,104,0.03); }
+
+  @keyframes rowIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  tbody tr:nth-child(2) { animation-delay: 0.03s; }
+  tbody tr:nth-child(3) { animation-delay: 0.06s; }
+  tbody tr:nth-child(4) { animation-delay: 0.09s; }
+  tbody tr:nth-child(5) { animation-delay: 0.12s; }
+  tbody tr:nth-child(6) { animation-delay: 0.15s; }
+
+  td {
+    padding: 18px 20px;
+    font-size: 13px;
+    vertical-align: top;
+    line-height: 1.7;
+  }
+
+  td:first-child { padding-left: 28px; }
+  td:last-child { white-space: nowrap; }
+
+  .supplier-name { font-weight: 700; font-size: 14px; color: var(--text); }
+  .supplier-sub { font-size: 12px; color: rgba(26,26,26,0.35); margin-top: 2px; }
+
+  .tags { display: flex; flex-wrap: wrap; gap: 5px; }
+
+  .tag {
+    display: inline-block;
+    padding: 3px 12px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+
+  .tag-type { background: rgba(26,26,26,0.05); color: rgba(26,26,26,0.65); }
+  .tag-style { background: rgba(176,137,104,0.1); color: var(--accent); }
+
+  .point-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    font-size: 12px;
+    line-height: 1.6;
+    color: rgba(26,26,26,0.6);
+  }
+
+  .point-list .point { display: flex; align-items: flex-start; gap: 5px; }
+
+  .point-list .point::before {
+    content: '';
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 7px;
+  }
+
+  .point-list.pros .point::before { background: #6B9E6B; }
+  .point-list.cons .point::before { background: #C0504D; }
+
+  .scene-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .scene-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 12px 4px 4px;
+    background: rgba(176,137,104,0.07);
+    border: 1px solid rgba(176,137,104,0.15);
+    border-radius: 100px;
+    font-size: 12px;
+    color: rgba(26,26,26,0.7);
+    cursor: default;
+    transition: all 0.15s;
+  }
+
+  .scene-chip:hover { background: rgba(176,137,104,0.12); }
+  .scene-chip.has-img { cursor: pointer; }
+
+  .scene-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid rgba(176,137,104,0.2);
+  }
+
+  .scene-icon-ph {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: rgba(176,137,104,0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .scene-icon-ph svg { width: 11px; height: 11px; color: rgba(26,26,26,0.3); }
+
+  .scene-chip .dot-ind {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .rating { display: inline-flex; gap: 4px; }
+  .rating .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); }
+  .rating .dot.filled { background: var(--accent); }
+
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .status.active .status-dot { background: #6B9E6B; }
+  .status.active { color: #6B9E6B; }
+  .status.inactive .status-dot { background: rgba(26,26,26,0.2); }
+  .status.inactive { color: rgba(26,26,26,0.35); }
+
+  .act-btn {
+    background: none;
+    border: none;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
+    color: rgba(26,26,26,0.4);
+    cursor: pointer;
+    transition: color 0.15s;
+    border-radius: 4px;
+  }
+  .act-btn:hover { color: var(--accent); }
+  .act-btn.del:hover { color: #C0504D; }
+
+  .empty-state {
+    text-align: center;
+    padding: 80px 20px;
+    color: rgba(26,26,26,0.3);
+    font-size: 14px;
+    font-weight: 300;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--text);
+    color: var(--bg);
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    z-index: 300;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    opacity: 0;
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  .scene-preview {
+    display: none;
+    position: fixed;
+    z-index: 50;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+    pointer-events: none;
+  }
+
+  .scene-preview.visible { display: block; }
+
+  .scene-preview img {
+    display: block;
+    max-width: 260px;
+    max-height: 180px;
+    border-radius: 6px;
+    object-fit: cover;
+  }
+
+  .scene-preview .pv-label {
+    padding: 6px 4px 2px;
+    font-size: 12px;
+    color: rgba(26,26,26,0.45);
+    text-align: center;
+  }
+
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: rgba(247,246,242,0.92);
+    backdrop-filter: blur(20px);
+    justify-content: center;
+    align-items: center;
+    cursor: zoom-out;
+  }
+
+  .lightbox.show { display: flex; }
+  .lb-inner { max-width: 88vw; max-height: 82vh; text-align: center; }
+
+  .lb-inner img {
+    max-width: 88vw;
+    max-height: 76vh;
+    border-radius: 12px;
+    box-shadow: 0 20px 80px rgba(0,0,0,0.08);
+    object-fit: contain;
+  }
+
+  .lb-label {
+    margin-top: 20px;
+    font-size: 15px;
+    font-weight: 400;
+    color: rgba(26,26,26,0.45);
+  }
+
+  .lb-close {
+    position: fixed;
+    top: 32px;
+    right: 36px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s;
+  }
+
+  .lb-close:hover { opacity: 0.6; }
+
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,26,26,0.2);
+    backdrop-filter: blur(6px);
+    z-index: 100;
+    justify-content: center;
+    align-items: center;
+    padding: 4vh 3vw;
+    overflow-y: auto;
+  }
+
+  .modal-overlay.show { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 36px 40px;
+    width: 100%;
+    max-width: 1080px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.06);
+    animation: modalIn 0.25s ease;
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .modal h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 28px;
+    color: var(--text);
+  }
+
+  .modal-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 40px;
+  }
+
+  .modal-col { display: flex; flex-direction: column; }
+
+  .form-group { margin-bottom: 18px; }
+
+  .form-group label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(26,26,26,0.4);
+    margin-bottom: 7px;
+  }
+
+  .form-group input[type="text"],
+  .form-group input[type="number"],
+  .form-group textarea {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 13px;
+    font-size: 13px;
+    font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus { border-color: var(--accent); }
+
+  .form-group textarea { resize: vertical; }
+
+  .form-hint {
+    font-size: 11px;
+    color: rgba(26,26,26,0.3);
+    margin-top: 3px;
+  }
+
+  .scene-builder { display: flex; flex-direction: column; gap: 6px; }
+
+  .scene-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 7px 8px 7px 10px;
+    transition: border-color 0.2s;
+  }
+
+  .scene-row:focus-within { border-color: rgba(176,137,104,0.4); }
+
+  .scene-row input[type="text"] {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 4px 0;
+    font-size: 13px;
+    font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
+    color: var(--text);
+    outline: none;
+    min-width: 0;
+  }
+
+  .scene-row input[type="text"]::placeholder { color: rgba(26,26,26,0.25); }
+
+  .img-upload-btn {
+    position: relative;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px dashed rgba(176,137,104,0.35);
+    background: rgba(176,137,104,0.05);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(26,26,26,0.3);
+    transition: all 0.15s;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .img-upload-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .img-upload-btn svg { width: 15px; height: 15px; pointer-events: none; }
+  .img-upload-btn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+  .img-upload-btn.has-preview img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 5px;
+  }
+
+  .sort-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex-shrink: 0;
+  }
+
+  .sort-btn {
+    width: 20px;
+    height: 15px;
+    border: none;
+    background: transparent;
+    color: rgba(26,26,26,0.25);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    transition: all 0.15s;
+    padding: 0;
+  }
+
+  .sort-btn:hover { color: var(--accent); background: rgba(176,137,104,0.1); }
+  .sort-btn:disabled { color: rgba(26,26,26,0.08); cursor: default; background: transparent; }
+  .sort-btn svg { width: 9px; height: 9px; }
+
+  .row-remove {
+    width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    border: none;
+    background: transparent;
+    color: rgba(26,26,26,0.25);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+
+  .row-remove:hover { color: #C0504D; background: rgba(192,80,77,0.06); }
+  .row-remove svg { width: 13px; height: 13px; }
+
+  .add-scene-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: none;
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
+    color: rgba(26,26,26,0.35);
+    cursor: pointer;
+    transition: all 0.15s;
+    align-self: flex-start;
+    margin-top: 6px;
+  }
+
+  .add-scene-trigger:hover { border-color: var(--accent); color: var(--accent); }
+
+  .modal-bottom {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+  }
+
+  .modal-bottom .form-group { margin-bottom: 0; flex: 1; min-width: 140px; }
+
+  .status-pills { display: flex; gap: 6px; margin-top: 2px; }
+
+  .s-pill {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 8px 16px;
+    font-size: 12px;
+    font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
+    font-weight: 500;
+    color: rgba(26,26,26,0.45);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .s-pill.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    grid-column: 1 / -1;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .btn-cancel {
+    background: none;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 22px;
+    font-size: 13px;
+    font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
+    color: rgba(26,26,26,0.5);
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+
+  .btn-cancel:hover { border-color: rgba(26,26,26,0.3); }
+
+  .btn-save {
+    background: var(--text);
+    border: none;
+    border-radius: 6px;
+    padding: 10px 28px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
+    color: var(--bg);
+    cursor: pointer;
+    transition: opacity 0.15s;
+  }
+
+  .btn-save:hover { opacity: 0.85; }
+
+  .btn-save:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  @media (max-width: 960px) {
+    .app { padding: 32px 20px 60px; }
+    .header-top { flex-direction: column; align-items: flex-start; }
+    .stats { gap: 24px; }
+    .header h1 { font-size: 28px; }
+    td, thead th { padding: 14px 14px; }
+    td:first-child, thead th:first-child { padding-left: 18px; }
+    .modal { padding: 28px 24px; }
+    .modal-body { grid-template-columns: 1fr; }
+    .modal { max-width: 560px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <h1>供应商拍摄资源总览</h1>
+        <p>管理拍摄类型、调性风格与可用场景</p>
+      </div>
+      <div class="stats">
+        <div class="stat-item">
+          <div class="num" id="totalCount">0</div>
+          <div class="label">供应商</div>
+        </div>
+        <div class="stat-item">
+          <div class="num" id="sceneCount">0</div>
+          <div class="label">场景</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <div class="sync-status">
+      <span class="sync-dot" id="syncDot"></span>
+      <span id="syncText">连接中…</span>
+    </div>
+    <div class="controls-right">
+      <button class="add-btn" id="addBtn">+ 新增供应商</button>
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>供应商</th>
+          <th>拍摄类型</th>
+          <th>调性风格</th>
+          <th>可用场景</th>
+          <th>优点</th>
+          <th>缺点</th>
+          <th>评级</th>
+          <th>状态</th>
+          <th>操作</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div class="loading-overlay" id="loadingState">
+      <div class="loading-spinner"></div>
+      <span>加载中…</span>
+    </div>
+    <div class="empty-state" id="emptyState" style="display:none;">暂无数据</div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="scene-preview" id="scenePreview">
+  <img id="pvImg" src="" alt="">
+  <div class="pv-label" id="pvLabel"></div>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" id="lbClose">&times;</button>
+  <div class="lb-inner">
+    <img id="lbImg" src="" alt="">
+    <div class="lb-label" id="lbLabel"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2 id="modalTitle">新增供应商</h2>
+    <div class="modal-body">
+      <div class="modal-col">
+        <div class="form-group">
+          <label>供应商名称</label>
+          <input type="text" id="fName" placeholder="如：锐意视觉">
+        </div>
+        <div class="form-group">
+          <label>所属区域</label>
+          <input type="text" id="fRegion" placeholder="如：深圳 / 北京">
+        </div>
+        <div class="form-group">
+          <label>拍摄类型</label>
+          <textarea id="fTypes" rows="2" placeholder="如：产品，模特，微距"></textarea>
+          <div class="form-hint">多个类型用逗号分隔</div>
+        </div>
+        <div class="form-group">
+          <label>调性风格</label>
+          <textarea id="fStyles" rows="2" placeholder="如：高级感，家居简约，自然清新"></textarea>
+          <div class="form-hint">多个风格用逗号分隔</div>
+        </div>
+        <div class="form-group">
+          <label>优点</label>
+          <textarea id="fPros" rows="3" placeholder="如：出片速度快，沟通效率高"></textarea>
+          <div class="form-hint">多个优点用逗号分隔</div>
+        </div>
+        <div class="form-group">
+          <label>缺点</label>
+          <textarea id="fCons" rows="3" placeholder="如：价格偏高，档期紧张"></textarea>
+          <div class="form-hint">多个缺点用逗号分隔</div>
+        </div>
+      </div>
+      <div class="modal-col">
+        <div class="form-group" style="flex:1;display:flex;flex-direction:column;">
+          <label>可用场景（可附带图片，可上下移动排序）</label>
+          <div class="scene-builder" id="sceneBuilder" style="flex:1;"></div>
+          <button class="add-scene-trigger" id="addSceneBtn" type="button">+ 添加场景</button>
+        </div>
+      </div>
+      <div class="modal-bottom">
+        <div class="form-group">
+          <label>综合评级（1–5）</label>
+          <input type="number" id="fRating" min="1" max="5" value="5">
+        </div>
+        <div class="form-group">
+          <label>状态</label>
+          <div class="status-pills">
+            <button class="s-pill active" data-val="active">合作中</button>
+            <button class="s-pill" data-val="inactive">暂停</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-cancel" id="cancelBtn">取消</button>
+        <button class="btn-save" id="submitBtn">保存</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+// ============================================================
+const SUPABASE_URL = 'https://gpjqmbfjaabonqhwgnka.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwanFtYmZqYWFib25xaHdnbmthIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NjQ4OTEsImV4cCI6MjEwMDI0MDg5MX0.bivYDgA00H1gtv5121lwI09iiepiHDZ7eaFSxAGZi5o';
+// ============================================================
+
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const TABLE = 'suppliers';
+
+let data = [];
+let editingIndex = -1;
+let editingId = null;
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+function setSync(online) {
+  const dot = document.getElementById('syncDot');
+  const txt = document.getElementById('syncText');
+  dot.className = 'sync-dot' + (online ? '' : ' offline');
+  txt.textContent = online ? '已连接' : '连接断开';
+}
+
+function ratingHTML(n) {
+  let h = '<div class="rating">';
+  for (let i = 1; i <= 5; i++) h += '<div class="dot' + (i <= n ? ' filled' : '') + '"></div>';
+  return h + '</div>';
+}
+
+function tagsHTML(arr, cls) {
+  return '<div class="tags">' + (arr||[]).map(t => '<span class="tag ' + cls + '">' + t + '</span>').join('') + '</div>';
+}
+
+function pointsHTML(arr, cls) {
+  if (!arr || !arr.length) return '<span style="color:rgba(26,26,26,0.2);font-size:12px;">—</span>';
+  return '<div class="point-list ' + cls + '">' + arr.map(p => '<div class="point">' + p + '</div>').join('') + '</div>';
+}
+
+function scenesHTML(scenes) {
+  let h = '<div class="scene-grid">';
+  (scenes||[]).forEach(s => {
+    const has = s.image && s.image.length > 10;
+    h += '<div class="scene-chip' + (has ? ' has-img' : '') + '"'
+      + (has ? ' data-img="' + encodeURIComponent(s.image) + '" data-label="' + s.name + '"' : '') + '>'
+      + (has
+        ? '<img class="scene-thumb" src="' + s.image + '" alt="">'
+        : '<span class="scene-icon-ph"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg></span>')
+      + '<span>' + s.name + '</span>'
+      + (has ? '<span class="dot-ind"></span>' : '')
+      + '</div>';
+  });
+  return h + '</div>';
+}
+
+function render() {
+  const tbody = document.getElementById('tableBody');
+  const empty = document.getElementById('emptyState');
+  const loading = document.getElementById('loadingState');
+
+  loading.style.display = 'none';
+
+  if (!data.length) {
+    tbody.innerHTML = '';
+    empty.style.display = 'block';
+  } else {
+    empty.style.display = 'none';
+    tbody.innerHTML = data.map((d, i) => {
+      return '<tr>'
+        + '<td><div class="supplier-name">' + d.name + '</div><div class="supplier-sub">' + d.region + '</div></td>'
+        + '<td>' + tagsHTML(d.types, 'tag-type') + '</td>'
+        + '<td>' + tagsHTML(d.styles, 'tag-style') + '</td>'
+        + '<td>' + scenesHTML(d.scenes) + '</td>'
+        + '<td>' + pointsHTML(d.pros, 'pros') + '</td>'
+        + '<td>' + pointsHTML(d.cons, 'cons') + '</td>'
+        + '<td>' + ratingHTML(d.rating) + '</td>'
+        + '<td><span class="status ' + d.status + '"><span class="status-dot"></span>' + (d.status === 'active' ? '合作中' : '暂停') + '</span></td>'
+        + '<td><button class="act-btn" onclick="editRow(' + i + ')">编辑</button> <button class="act-btn del" onclick="deleteRow(' + i + ')">删除</button></td>'
+        + '</tr>';
+    }).join('');
+  }
+
+  document.getElementById('totalCount').textContent = data.length;
+  const sc = new Set();
+  data.forEach(d => (d.scenes||[]).forEach(s => sc.add(s.name)));
+  document.getElementById('sceneCount').textContent = sc.size;
+  bindPreviews();
+}
+
+// Preview & Lightbox
+function bindPreviews() {
+  const pv = document.getElementById('scenePreview');
+  const img = document.getElementById('pvImg');
+  const lbl = document.getElementById('pvLabel');
+  document.querySelectorAll('.scene-chip.has-img').forEach(c => {
+    c.onmouseenter = e => {
+      img.src = decodeURIComponent(c.dataset.img);
+      lbl.textContent = c.dataset.label;
+      pv.classList.add('visible');
+      pos(e);
+    };
+    c.onmousemove = pos;
+    c.onmouseleave = () => pv.classList.remove('visible');
+    c.onclick = () => openLightbox(decodeURIComponent(c.dataset.img), c.dataset.label);
+  });
+  function pos(e) {
+    let x = e.clientX + 14, y = e.clientY + 14;
+    if (x + 280 > window.innerWidth) x = e.clientX - 280;
+    if (y + 220 > window.innerHeight) y = e.clientY - 220;
+    pv.style.left = x + 'px'; pv.style.top = y + 'px';
+  }
+}
+
+function openLightbox(src, label) {
+  document.getElementById('lbImg').src = src;
+  document.getElementById('lbLabel').textContent = label || '';
+  document.getElementById('lightbox').classList.add('show');
+}
+
+document.getElementById('lightbox').addEventListener('click', e => {
+  if (e.target !== document.getElementById('lbImg')) document.getElementById('lightbox').classList.remove('show');
+});
+document.getElementById('lbClose').addEventListener('click', () => document.getElementById('lightbox').classList.remove('show'));
+
+// Modal
+const overlay = document.getElementById('modalOverlay');
+function openModal() { overlay.classList.add('show'); }
+function closeModal() { overlay.classList.remove('show'); editingIndex = -1; editingId = null; }
+
+function addSceneRow(name, image) {
+  const builder = document.getElementById('sceneBuilder');
+  const row = document.createElement('div');
+  row.className = 'scene-row';
+  row.innerHTML = '<div class="sort-group"><button class="sort-btn sort-up" type="button" title="上移"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg></button><button class="sort-btn sort-down" type="button" title="下移"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></button></div>'
+    + '<input type="text" placeholder="场景名称" value="' + (name || '') + '">'
+    + '<div class="img-upload-btn' + (image ? ' has-preview' : '') + '">'
+    + (image ? '<img src="' + image + '" alt="">' : '')
+    + '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>'
+    + '<input type="file" accept="image/*"></div>'
+    + '<button class="row-remove" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg></button>';
+
+  const fileInput = row.querySelector('input[type="file"]');
+  const imgBtn = row.querySelector('.img-upload-btn');
+  fileInput.addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const img = new Image();
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const max = 600;
+        let w = img.width, h = img.height;
+        if (w > max) { h = h * max / w; w = max; }
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        const url = canvas.toDataURL('image/jpeg', 0.6);
+        imgBtn.classList.add('has-preview');
+        const old = imgBtn.querySelector('img');
+        if (old) old.remove();
+        const ni = document.createElement('img');
+        ni.src = url;
+        ni.setAttribute('data-dataurl', url);
+        imgBtn.insertBefore(ni, imgBtn.querySelector('svg'));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+  if (image) {
+    const el = imgBtn.querySelector('img');
+    if (el) el.setAttribute('data-dataurl', image);
+  }
+  row.querySelector('.sort-up').addEventListener('click', () => moveSceneRow(row, -1));
+  row.querySelector('.sort-down').addEventListener('click', () => moveSceneRow(row, 1));
+  row.querySelector('.row-remove').addEventListener('click', () => { row.remove(); refreshSortButtons(); });
+  builder.appendChild(row);
+  refreshSortButtons();
+}
+
+function moveSceneRow(row, dir) {
+  const builder = document.getElementById('sceneBuilder');
+  const rows = Array.from(builder.querySelectorAll('.scene-row'));
+  const idx = rows.indexOf(row);
+  if (dir === -1 && idx > 0) builder.insertBefore(row, rows[idx - 1]);
+  else if (dir === 1 && idx < rows.length - 1) builder.insertBefore(rows[idx + 1], row);
+  refreshSortButtons();
+}
+
+function refreshSortButtons() {
+  const rows = Array.from(document.getElementById('sceneBuilder').querySelectorAll('.scene-row'));
+  rows.forEach((r, i) => {
+    r.querySelector('.sort-up').disabled = (i === 0);
+    r.querySelector('.sort-down').disabled = (i === rows.length - 1);
+  });
+}
+
+document.getElementById('addSceneBtn').addEventListener('click', () => addSceneRow());
+
+document.querySelectorAll('.s-pill').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.s-pill').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+});
+
+// Add new
+document.getElementById('addBtn').addEventListener('click', () => {
+  editingIndex = -1; editingId = null;
+  document.getElementById('modalTitle').textContent = '新增供应商';
+  document.getElementById('fName').value = '';
+  document.getElementById('fRegion').value = '';
+  document.getElementById('fTypes').value = '';
+  document.getElementById('fStyles').value = '';
+  document.getElementById('fPros').value = '';
+  document.getElementById('fCons').value = '';
+  document.getElementById('fRating').value = '5';
+  document.getElementById('sceneBuilder').innerHTML = '';
+  document.querySelectorAll('.s-pill').forEach(b => b.classList.toggle('active', b.dataset.val === 'active'));
+  addSceneRow();
+  openModal();
+});
+
+document.getElementById('cancelBtn').addEventListener('click', closeModal);
+overlay.addEventListener('click', e => { if (e.target === overlay) closeModal(); });
+
+function parseArr(v) { return v.split(/[,，]/).map(s => s.trim()).filter(Boolean); }
+
+// Submit → Supabase
+document.getElementById('submitBtn').addEventListener('click', async () => {
+  const name = document.getElementById('fName').value.trim();
+  if (!name) { alert('请输入供应商名称'); return; }
+
+  const scenes = [];
+  document.querySelectorAll('#sceneBuilder .scene-row').forEach(row => {
+    const sn = row.querySelector('input[type="text"]').value.trim();
+    if (!sn) return;
+    const imgEl = row.querySelector('.img-upload-btn img');
+    const url = imgEl ? (imgEl.getAttribute('data-dataurl') || imgEl.src) : null;
+    scenes.push({ name: sn, image: url && url.length > 10 ? url : null });
+  });
+
+  const row = {
+    name,
+    region: document.getElementById('fRegion').value.trim() || '未知',
+    types: parseArr(document.getElementById('fTypes').value),
+    styles: parseArr(document.getElementById('fStyles').value),
+    scenes,
+    pros: parseArr(document.getElementById('fPros').value),
+    cons: parseArr(document.getElementById('fCons').value),
+    rating: Math.max(1, Math.min(5, parseInt(document.getElementById('fRating').value) || 3)),
+    status: document.querySelector('.s-pill.active')?.dataset.val || 'active'
+  };
+
+  const btn = document.getElementById('submitBtn');
+  btn.textContent = '保存中…'; btn.disabled = true;
+
+  let result;
+  if (editingId) {
+    result = await db.from(TABLE).update(row).eq('id', editingId).select();
+  } else {
+    result = await db.from(TABLE).insert(row).select();
+  }
+
+  btn.textContent = '保存'; btn.disabled = false;
+
+  if (result.error) {
+    alert('保存失败：' + result.error.message);
+    return;
+  }
+
+  closeModal();
+  toast(editingId ? '已更新' : '已添加');
+  await loadData();
+});
+
+// Edit
+async function editRow(i) {
+  const d = data[i];
+  editingIndex = i;
+  editingId = d.id;
+  document.getElementById('modalTitle').textContent = '编辑供应商';
+  document.getElementById('fName').value = d.name;
+  document.getElementById('fRegion').value = d.region;
+  document.getElementById('fTypes').value = (d.types||[]).join('，');
+  document.getElementById('fStyles').value = (d.styles||[]).join('，');
+  document.getElementById('fPros').value = (d.pros||[]).join('，');
+  document.getElementById('fCons').value = (d.cons||[]).join('，');
+  document.getElementById('fRating').value = d.rating;
+  document.querySelectorAll('.s-pill').forEach(b => b.classList.toggle('active', b.dataset.val === d.status));
+  document.getElementById('sceneBuilder').innerHTML = '';
+  if ((d.scenes||[]).length) d.scenes.forEach(s => addSceneRow(s.name, s.image));
+  else addSceneRow();
+  openModal();
+}
+
+// Delete
+async function deleteRow(i) {
+  if (!confirm('确定删除「' + data[i].name + '」？')) return;
+  const { error } = await db.from(TABLE).delete().eq('id', data[i].id);
+  if (error) { alert('删除失败：' + error.message); return; }
+  toast('已删除');
+  await loadData();
+}
+
+// Load from Supabase
+async function loadData() {
+  const { data: rows, error } = await db.from(TABLE).select('*').order('created_at', { ascending: true });
+  if (error) {
+    console.error('loadData error:', error);
+    setSync(false);
+    document.getElementById('loadingState').innerHTML = '<span style="color:#C0504D;">加载失败，请检查 Supabase 连接配置</span>';
+    return;
+  }
+  data = rows || [];
+  setSync(true);
+  render();
+}
+
+// Real-time subscription
+function subscribeRealtime() {
+  db.channel('suppliers-live')
+    .on('postgres_changes', { event: '*', schema: 'public', table: TABLE }, () => {
+      loadData();
+    })
+    .subscribe(status => {
+      setSync(status === 'SUBSCRIBED');
+    });
+}
+
+// Init
+(async function init() {
+  await loadData();
+  subscribeRealtime();
+})();
+</script>
+</body>
+</html>
