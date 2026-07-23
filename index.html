@@ -25,12 +25,12 @@
   }
 
   .app {
-    max-width: 1560px;
+    max-width: 1440px;
     margin: 0 auto;
-    padding: 60px 64px 100px;
+    padding: 48px 40px 80px;
   }
 
-  .header { margin-bottom: 56px; }
+  .header { margin-bottom: 40px; }
 
   .header-top {
     display: flex;
@@ -38,12 +38,12 @@
     justify-content: space-between;
     gap: 24px;
     flex-wrap: wrap;
-    padding-bottom: 32px;
+    padding-bottom: 28px;
     border-bottom: 1px solid var(--border);
   }
 
   .header h1 {
-    font-size: 36px;
+    font-size: 32px;
     font-weight: 700;
     letter-spacing: -0.5px;
     line-height: 1.2;
@@ -51,18 +51,17 @@
   }
 
   .header p {
-    margin-top: 8px;
+    margin-top: 6px;
     font-size: 14px;
     font-weight: 300;
     color: rgba(26,26,26,0.45);
-    letter-spacing: 0.3px;
   }
 
-  .stats { display: flex; gap: 32px; }
+  .stats { display: flex; gap: 28px; }
   .stat-item { text-align: right; }
 
   .stat-item .num {
-    font-size: 28px;
+    font-size: 26px;
     font-weight: 400;
     color: var(--accent);
     line-height: 1;
@@ -74,14 +73,14 @@
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: rgba(26,26,26,0.35);
-    margin-top: 6px;
+    margin-top: 5px;
   }
 
   .controls {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 32px;
+    margin-bottom: 24px;
     flex-wrap: wrap;
     gap: 12px;
   }
@@ -117,7 +116,7 @@
     background: var(--text);
     border: none;
     border-radius: 6px;
-    padding: 11px 24px;
+    padding: 10px 22px;
     font-size: 13px;
     font-weight: 500;
     font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
@@ -133,7 +132,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 120px 0;
+    padding: 100px 0;
     color: rgba(26,26,26,0.3);
     font-size: 14px;
     gap: 10px;
@@ -155,17 +154,30 @@
     border: 1px solid var(--border);
     border-radius: 10px;
     overflow: hidden;
-    overflow-x: auto;
   }
 
-  table { width: 100%; border-collapse: collapse; min-width: 1200px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  .col-supplier { width: 6%; }
+  .col-type    { width: 10%; }
+  .col-style   { width: 10%; }
+  .col-scene   { width: 36%; }
+  .col-pros    { width: 10%; }
+  .col-cons    { width: 10%; }
+  .col-rating  { width: 6%; }
+  .col-status  { width: 6%; }
+  .col-action  { width: 6%; }
 
   thead th {
-    padding: 14px 20px;
+    padding: 12px 14px;
     font-size: 11px;
     font-weight: 500;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.08em;
     color: rgba(26,26,26,0.35);
     text-align: left;
     border-bottom: 1px solid var(--border);
@@ -173,7 +185,7 @@
     white-space: nowrap;
   }
 
-  thead th:first-child { padding-left: 28px; }
+  thead th:first-child { padding-left: 22px; }
 
   tbody tr {
     border-bottom: 1px solid var(--border);
@@ -193,26 +205,26 @@
   tbody tr:nth-child(3) { animation-delay: 0.06s; }
   tbody tr:nth-child(4) { animation-delay: 0.09s; }
   tbody tr:nth-child(5) { animation-delay: 0.12s; }
-  tbody tr:nth-child(6) { animation-delay: 0.15s; }
 
   td {
-    padding: 18px 20px;
+    padding: 14px 14px;
     font-size: 13px;
     vertical-align: top;
-    line-height: 1.7;
+    line-height: 1.6;
+    word-break: break-all;
+    overflow-wrap: break-word;
   }
 
-  td:first-child { padding-left: 28px; }
-  td:last-child { white-space: nowrap; }
+  td:first-child { padding-left: 22px; }
 
   .supplier-name { font-weight: 700; font-size: 14px; color: var(--text); }
   .supplier-sub { font-size: 12px; color: rgba(26,26,26,0.35); margin-top: 2px; }
 
-  .tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .tags { display: flex; flex-wrap: wrap; gap: 4px; }
 
   .tag {
     display: inline-block;
-    padding: 3px 12px;
+    padding: 2px 10px;
     border-radius: 100px;
     font-size: 12px;
     font-weight: 400;
@@ -225,13 +237,13 @@
   .point-list {
     display: flex;
     flex-direction: column;
-    gap: 3px;
+    gap: 2px;
     font-size: 12px;
-    line-height: 1.6;
+    line-height: 1.5;
     color: rgba(26,26,26,0.6);
   }
 
-  .point-list .point { display: flex; align-items: flex-start; gap: 5px; }
+  .point-list .point { display: flex; align-items: flex-start; gap: 4px; }
 
   .point-list .point::before {
     content: '';
@@ -239,23 +251,23 @@
     height: 4px;
     border-radius: 50%;
     flex-shrink: 0;
-    margin-top: 7px;
+    margin-top: 6px;
   }
 
   .point-list.pros .point::before { background: #6B9E6B; }
   .point-list.cons .point::before { background: #C0504D; }
 
-  .scene-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+  .scene-grid { display: flex; flex-wrap: wrap; gap: 4px; }
 
   .scene-chip {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    padding: 4px 12px 4px 4px;
+    gap: 4px;
+    padding: 2px 8px 2px 4px;
     background: rgba(176,137,104,0.07);
     border: 1px solid rgba(176,137,104,0.15);
     border-radius: 100px;
-    font-size: 12px;
+    font-size: 11px;
     color: rgba(26,26,26,0.7);
     cursor: default;
     transition: all 0.15s;
@@ -265,16 +277,16 @@
   .scene-chip.has-img { cursor: pointer; }
 
   .scene-thumb {
-    width: 22px;
-    height: 22px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     object-fit: cover;
     border: 1px solid rgba(176,137,104,0.2);
   }
 
   .scene-icon-ph {
-    width: 22px;
-    height: 22px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     background: rgba(176,137,104,0.12);
     display: flex;
@@ -283,24 +295,24 @@
     flex-shrink: 0;
   }
 
-  .scene-icon-ph svg { width: 11px; height: 11px; color: rgba(26,26,26,0.3); }
+  .scene-icon-ph svg { width: 9px; height: 9px; color: rgba(26,26,26,0.3); }
 
   .scene-chip .dot-ind {
-    width: 5px;
-    height: 5px;
+    width: 4px;
+    height: 4px;
     border-radius: 50%;
     background: var(--accent);
     flex-shrink: 0;
   }
 
-  .rating { display: inline-flex; gap: 4px; }
-  .rating .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); }
+  .rating { display: inline-flex; gap: 3px; }
+  .rating .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); }
   .rating .dot.filled { background: var(--accent); }
 
   .status {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 5px;
     font-size: 12px;
     font-weight: 500;
     white-space: nowrap;
@@ -315,7 +327,7 @@
   .act-btn {
     background: none;
     border: none;
-    padding: 4px 10px;
+    padding: 3px 6px;
     font-size: 12px;
     font-family: 'Microsoft YaHei', '微软雅黑', sans-serif;
     color: rgba(26,26,26,0.4);
@@ -709,20 +721,16 @@
   }
 
   .btn-save:hover { opacity: 0.85; }
-
-  .btn-save:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
+  .btn-save:disabled { opacity: 0.5; cursor: not-allowed; }
 
   @media (max-width: 960px) {
-    .app { padding: 32px 20px 60px; }
+    .app { padding: 24px 16px 60px; }
     .header-top { flex-direction: column; align-items: flex-start; }
     .stats { gap: 24px; }
-    .header h1 { font-size: 28px; }
-    td, thead th { padding: 14px 14px; }
-    td:first-child, thead th:first-child { padding-left: 18px; }
-    .modal { padding: 28px 24px; }
+    .header h1 { font-size: 24px; }
+    td, thead th { padding: 10px 10px; }
+    td:first-child, thead th:first-child { padding-left: 14px; }
+    .modal { padding: 24px 20px; }
     .modal-body { grid-template-columns: 1fr; }
     .modal { max-width: 560px; }
   }
@@ -764,15 +772,15 @@
     <table>
       <thead>
         <tr>
-          <th>供应商</th>
-          <th>拍摄类型</th>
-          <th>调性风格</th>
-          <th>可用场景</th>
-          <th>优点</th>
-          <th>缺点</th>
-          <th>评级</th>
-          <th>状态</th>
-          <th>操作</th>
+          <th class="col-supplier">供应商</th>
+          <th class="col-type">拍摄类型</th>
+          <th class="col-style">调性风格</th>
+          <th class="col-scene">可用场景</th>
+          <th class="col-pros">优点</th>
+          <th class="col-cons">缺点</th>
+          <th class="col-rating">评级</th>
+          <th class="col-status">状态</th>
+          <th class="col-action">操作</th>
         </tr>
       </thead>
       <tbody id="tableBody"></tbody>
@@ -864,10 +872,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-// ============================================================
 const SUPABASE_URL = 'https://gpjqmbfjaabonqhwgnka.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdwanFtYmZqYWFib25xaHdnbmthIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ2NjQ4OTEsImV4cCI6MjEwMDI0MDg5MX0.bivYDgA00H1gtv5121lwI09iiepiHDZ7eaFSxAGZi5o';
-// ============================================================
 
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const TABLE = 'suppliers';
@@ -925,7 +931,6 @@ function render() {
   const tbody = document.getElementById('tableBody');
   const empty = document.getElementById('emptyState');
   const loading = document.getElementById('loadingState');
-
   loading.style.display = 'none';
 
   if (!data.length) {
@@ -943,7 +948,7 @@ function render() {
         + '<td>' + pointsHTML(d.cons, 'cons') + '</td>'
         + '<td>' + ratingHTML(d.rating) + '</td>'
         + '<td><span class="status ' + d.status + '"><span class="status-dot"></span>' + (d.status === 'active' ? '合作中' : '暂停') + '</span></td>'
-        + '<td><button class="act-btn" onclick="editRow(' + i + ')">编辑</button> <button class="act-btn del" onclick="deleteRow(' + i + ')">删除</button></td>'
+        + '<td><button class="act-btn" onclick="editRow(' + i + ')">编辑</button><br><button class="act-btn del" onclick="deleteRow(' + i + ')">删除</button></td>'
         + '</tr>';
     }).join('');
   }
@@ -955,42 +960,24 @@ function render() {
   bindPreviews();
 }
 
-// Preview & Lightbox
 function bindPreviews() {
   const pv = document.getElementById('scenePreview');
   const img = document.getElementById('pvImg');
   const lbl = document.getElementById('pvLabel');
   document.querySelectorAll('.scene-chip.has-img').forEach(c => {
-    c.onmouseenter = e => {
-      img.src = decodeURIComponent(c.dataset.img);
-      lbl.textContent = c.dataset.label;
-      pv.classList.add('visible');
-      pos(e);
-    };
+    c.onmouseenter = e => { img.src = decodeURIComponent(c.dataset.img); lbl.textContent = c.dataset.label; pv.classList.add('visible'); pos(e); };
     c.onmousemove = pos;
     c.onmouseleave = () => pv.classList.remove('visible');
     c.onclick = () => openLightbox(decodeURIComponent(c.dataset.img), c.dataset.label);
   });
-  function pos(e) {
-    let x = e.clientX + 14, y = e.clientY + 14;
-    if (x + 280 > window.innerWidth) x = e.clientX - 280;
-    if (y + 220 > window.innerHeight) y = e.clientY - 220;
-    pv.style.left = x + 'px'; pv.style.top = y + 'px';
-  }
+  function pos(e) { let x = e.clientX + 14, y = e.clientY + 14; if (x + 280 > window.innerWidth) x = e.clientX - 280; if (y + 220 > window.innerHeight) y = e.clientY - 220; pv.style.left = x + 'px'; pv.style.top = y + 'px'; }
 }
 
-function openLightbox(src, label) {
-  document.getElementById('lbImg').src = src;
-  document.getElementById('lbLabel').textContent = label || '';
-  document.getElementById('lightbox').classList.add('show');
-}
+function openLightbox(src, label) { document.getElementById('lbImg').src = src; document.getElementById('lbLabel').textContent = label || ''; document.getElementById('lightbox').classList.add('show'); }
 
-document.getElementById('lightbox').addEventListener('click', e => {
-  if (e.target !== document.getElementById('lbImg')) document.getElementById('lightbox').classList.remove('show');
-});
+document.getElementById('lightbox').addEventListener('click', e => { if (e.target !== document.getElementById('lbImg')) document.getElementById('lightbox').classList.remove('show'); });
 document.getElementById('lbClose').addEventListener('click', () => document.getElementById('lightbox').classList.remove('show'));
 
-// Modal
 const overlay = document.getElementById('modalOverlay');
 function openModal() { overlay.classList.add('show'); }
 function closeModal() { overlay.classList.remove('show'); editingIndex = -1; editingId = null; }
@@ -1010,35 +997,27 @@ function addSceneRow(name, image) {
   const fileInput = row.querySelector('input[type="file"]');
   const imgBtn = row.querySelector('.img-upload-btn');
   fileInput.addEventListener('change', function() {
-    const file = this.files[0];
-    if (!file) return;
+    const file = this.files[0]; if (!file) return;
     const reader = new FileReader();
     reader.onload = function(e) {
       const img = new Image();
       img.onload = function() {
         const canvas = document.createElement('canvas');
-        const max = 600;
-        let w = img.width, h = img.height;
+        const max = 600; let w = img.width, h = img.height;
         if (w > max) { h = h * max / w; w = max; }
         canvas.width = w; canvas.height = h;
         canvas.getContext('2d').drawImage(img, 0, 0, w, h);
         const url = canvas.toDataURL('image/jpeg', 0.6);
         imgBtn.classList.add('has-preview');
-        const old = imgBtn.querySelector('img');
-        if (old) old.remove();
-        const ni = document.createElement('img');
-        ni.src = url;
-        ni.setAttribute('data-dataurl', url);
+        const old = imgBtn.querySelector('img'); if (old) old.remove();
+        const ni = document.createElement('img'); ni.src = url; ni.setAttribute('data-dataurl', url);
         imgBtn.insertBefore(ni, imgBtn.querySelector('svg'));
       };
       img.src = e.target.result;
     };
     reader.readAsDataURL(file);
   });
-  if (image) {
-    const el = imgBtn.querySelector('img');
-    if (el) el.setAttribute('data-dataurl', image);
-  }
+  if (image) { const el = imgBtn.querySelector('img'); if (el) el.setAttribute('data-dataurl', image); }
   row.querySelector('.sort-up').addEventListener('click', () => moveSceneRow(row, -1));
   row.querySelector('.sort-down').addEventListener('click', () => moveSceneRow(row, 1));
   row.querySelector('.row-remove').addEventListener('click', () => { row.remove(); refreshSortButtons(); });
@@ -1057,22 +1036,15 @@ function moveSceneRow(row, dir) {
 
 function refreshSortButtons() {
   const rows = Array.from(document.getElementById('sceneBuilder').querySelectorAll('.scene-row'));
-  rows.forEach((r, i) => {
-    r.querySelector('.sort-up').disabled = (i === 0);
-    r.querySelector('.sort-down').disabled = (i === rows.length - 1);
-  });
+  rows.forEach((r, i) => { r.querySelector('.sort-up').disabled = (i === 0); r.querySelector('.sort-down').disabled = (i === rows.length - 1); });
 }
 
 document.getElementById('addSceneBtn').addEventListener('click', () => addSceneRow());
 
 document.querySelectorAll('.s-pill').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.s-pill').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-  });
+  btn.addEventListener('click', () => { document.querySelectorAll('.s-pill').forEach(b => b.classList.remove('active')); btn.classList.add('active'); });
 });
 
-// Add new
 document.getElementById('addBtn').addEventListener('click', () => {
   editingIndex = -1; editingId = null;
   document.getElementById('modalTitle').textContent = '新增供应商';
@@ -1094,7 +1066,6 @@ overlay.addEventListener('click', e => { if (e.target === overlay) closeModal();
 
 function parseArr(v) { return v.split(/[,，]/).map(s => s.trim()).filter(Boolean); }
 
-// Submit → Supabase
 document.getElementById('submitBtn').addEventListener('click', async () => {
   const name = document.getElementById('fName').value.trim();
   if (!name) { alert('请输入供应商名称'); return; }
@@ -1124,29 +1095,20 @@ document.getElementById('submitBtn').addEventListener('click', async () => {
   btn.textContent = '保存中…'; btn.disabled = true;
 
   let result;
-  if (editingId) {
-    result = await db.from(TABLE).update(row).eq('id', editingId).select();
-  } else {
-    result = await db.from(TABLE).insert(row).select();
-  }
+  if (editingId) { result = await db.from(TABLE).update(row).eq('id', editingId).select(); }
+  else { result = await db.from(TABLE).insert(row).select(); }
 
   btn.textContent = '保存'; btn.disabled = false;
-
-  if (result.error) {
-    alert('保存失败：' + result.error.message);
-    return;
-  }
+  if (result.error) { alert('保存失败：' + result.error.message); return; }
 
   closeModal();
   toast(editingId ? '已更新' : '已添加');
   await loadData();
 });
 
-// Edit
 async function editRow(i) {
   const d = data[i];
-  editingIndex = i;
-  editingId = d.id;
+  editingIndex = i; editingId = d.id;
   document.getElementById('modalTitle').textContent = '编辑供应商';
   document.getElementById('fName').value = d.name;
   document.getElementById('fRegion').value = d.region;
@@ -1162,7 +1124,6 @@ async function editRow(i) {
   openModal();
 }
 
-// Delete
 async function deleteRow(i) {
   if (!confirm('确定删除「' + data[i].name + '」？')) return;
   const { error } = await db.from(TABLE).delete().eq('id', data[i].id);
@@ -1171,36 +1132,21 @@ async function deleteRow(i) {
   await loadData();
 }
 
-// Load from Supabase
 async function loadData() {
   const { data: rows, error } = await db.from(TABLE).select('*').order('created_at', { ascending: true });
-  if (error) {
-    console.error('loadData error:', error);
-    setSync(false);
-    document.getElementById('loadingState').innerHTML = '<span style="color:#C0504D;">加载失败，请检查 Supabase 连接配置</span>';
-    return;
-  }
+  if (error) { console.error('loadData error:', error); setSync(false); document.getElementById('loadingState').innerHTML = '<span style="color:#C0504D;">加载失败，请检查 Supabase 连接配置</span>'; return; }
   data = rows || [];
   setSync(true);
   render();
 }
 
-// Real-time subscription
 function subscribeRealtime() {
   db.channel('suppliers-live')
-    .on('postgres_changes', { event: '*', schema: 'public', table: TABLE }, () => {
-      loadData();
-    })
-    .subscribe(status => {
-      setSync(status === 'SUBSCRIBED');
-    });
+    .on('postgres_changes', { event: '*', schema: 'public', table: TABLE }, () => { loadData(); })
+    .subscribe(status => { setSync(status === 'SUBSCRIBED'); });
 }
 
-// Init
-(async function init() {
-  await loadData();
-  subscribeRealtime();
-})();
+(async function init() { await loadData(); subscribeRealtime(); })();
 </script>
 </body>
 </html>
